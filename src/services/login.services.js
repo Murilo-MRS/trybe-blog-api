@@ -1,26 +1,27 @@
 const { User } = require('../models');
+const generateToken = require('../utils/generateToken');
 
-const loginAuthetication = async ({ username, password }) => {
-  // if (!username || !password) {
-  //   const error = new Error('Campos faltantes');
-  //   error.status = 401;
-  //   throw error;
-  // }
-
-  const user = await User.findOne({
-    attributes: ['id', 'name', 'username'],
-    where: { username, password },
-  });
-
-  if (!user) {
-    const error = new Error('Usuário ou senha incorretos');
-    error.status = 401;
+const loginAuthetication = async ({ email, password }) => {
+  if (!email || !password) {
+    const error = new Error('Some required fields are missing');
+    error.type = 'MISSING_FIELDS';
     throw error;
   }
 
-  // const token = generateToken(user.dataValues);
+  const user = await User.findOne({
+    where: { email, password },
+    attributes: ['id', 'email', 'displayName'],
+  });
 
-  // return { token };
+  if (!user) {
+    const error = new Error('Invalid fields');
+    error.type = 'INVALID_FIELDS';
+    throw error;
+  }
+
+  const token = generateToken(user.dataValues);
+
+  return { token };
 };
 
 module.exports = {
