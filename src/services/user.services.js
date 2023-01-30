@@ -1,15 +1,23 @@
 const { User } = require('../models');
-// const schema = require('./validations/validators');
+const schema = require('./validations/validations');
 
-const signup = async ({ username, password }) => {
-  // const error = await schema.validateBody({ username, password });
-  // if (error.type) {
-  //   throw error;
-  // }
-  
-  const createdUser = await User.create({ username, password });
-  
-  return { type: null, message: createdUser };
+const signup = async (body) => {
+  const error = await schema.validateUserBody(body);
+
+  if (error.type) {
+    const fail = new Error(error.message);
+    fail.type = 'INVALID_FIELDS';
+    throw fail;
+  }
+
+  try {
+    const { dataValues } = await User.create(body);
+    return { type: null, message: dataValues };
+  } catch (errorOnCreate) {
+    const fail = new Error('User already registered');
+    fail.type = 'ALREADY_EXISTS';
+    throw fail;
+  }
 };
 
 module.exports = {

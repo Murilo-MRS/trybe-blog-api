@@ -1,13 +1,17 @@
 const { userService } = require('../services'); 
+const generateToken = require('../utils/generateToken');
 
-const signup = async (req, res, next) => {
-  try {
-    const { message } = await userService.signup(req.body);
-    
-    res.status(201).json(message);
-  } catch (error) {
-    next(error);
-  }
+const signup = async (req, res) => {
+  const { message } = await userService.signup(req.body);
+
+  const payload = {
+    displayName: message.displayName,
+    email: message.email,
+  };
+
+  const token = generateToken(payload);
+
+  res.status(201).json({ token });
 };
 
 module.exports = {
