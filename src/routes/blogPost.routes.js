@@ -4,7 +4,7 @@ const authenticateMiddleware = require('../middlewares/token.middleware');
 
 const routers = express.Router();
 
-// routers.post('/', authenticateMiddleware, blogPostController.createCategory);
+routers.get('/search', authenticateMiddleware, blogPostController.searchPost);
 routers.get('/', authenticateMiddleware, blogPostController.getAllBlogPost);
 routers.get('/:id', authenticateMiddleware, blogPostController.getBlogPostById);
 

@@ -13,7 +13,16 @@ const getBlogPostById = async (req, res) => {
   res.status(200).json(message);
 };
 
+const searchPost = async (req, res) => {
+  const { q } = req.query;
+
+  const { message } = await blogPostService.searchPost(q);
+
+  res.status(200).json(message);
+};
+
 module.exports = {
   getAllBlogPost,
   getBlogPostById,
+  searchPost,
 };
