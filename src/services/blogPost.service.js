@@ -57,9 +57,11 @@ const updatePost = async (id, loggedUser, body) => {
     throw error;
   }
 
-  const postUpdated = await BlogPost.update({ ...body }, { where: { id } });
+  await BlogPost.update({ ...body }, { where: { id } });
   
-  return { type: null, message: postUpdated };
+  const { message } = await getBlogPostById(id);
+  
+  return { type: null, message };
 };
 
 const deletePost = async (id, loggedUser) => {
