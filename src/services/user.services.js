@@ -1,4 +1,5 @@
 const { User } = require('../models');
+const authenticateToken = require('../utils/authenticateToken');
 const schema = require('./validations/validations');
 
 const signup = async (body) => {
@@ -32,6 +33,7 @@ const getAllUserById = async (id) => {
     {
       attributes: { exclude: ['password'] },
     });
+
   if (!user) {
     const error = new Error('User does not exist');
     error.type = 'USER_NOT_FOUND';
@@ -41,8 +43,18 @@ const getAllUserById = async (id) => {
   return { type: null, message: user };
 };
 
+const deleteUser = async (user) => {
+  const { email } = await authenticateToken(user);
+  console.log(email);
+  const deleted = await User.destroy({
+    where: { email },
+  });
+  return { type: null, message: deleted };
+};
+
 module.exports = {
   signup,
   getAllUsers,
   getAllUserById,
+  deleteUser,
 };
