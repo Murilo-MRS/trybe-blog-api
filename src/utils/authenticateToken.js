@@ -11,7 +11,6 @@ module.exports = async (token) => {
 
   try {
     const verificationResponse = await jwt.verify(token, JWT_SECRET);
-    console.log(verificationResponse);
     return verificationResponse;
   } catch (err) {
     const error = new Error('Expired or invalid token');
