@@ -20,6 +20,14 @@ const signup = async (body) => {
   }
 };
 
+const getAllUsers = async () => {
+  const users = await User.findAll({
+    attributes: { exclude: ['password'] },
+  });
+  return { type: null, message: users };
+};
+
 module.exports = {
   signup,
+  getAllUsers,
 };

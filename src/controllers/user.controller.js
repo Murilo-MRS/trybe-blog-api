@@ -14,6 +14,12 @@ const signup = async (req, res) => {
   res.status(201).json({ token });
 };
 
+const getAllUsers = async (_req, res) => {
+  const { message } = await userService.getAllUsers();
+  res.status(200).json(message);
+};
+
 module.exports = {
   signup,
+  getAllUsers,
 };
