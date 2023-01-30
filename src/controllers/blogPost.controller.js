@@ -21,6 +21,14 @@ const searchPost = async (req, res) => {
   res.status(200).json(message);
 };
 
+const createPost = async (req, res) => {
+  const { authorization } = req.headers;
+
+  const { message } = await blogPostService.createPost(req.body, authorization);
+
+  res.status(201).json(message);
+};
+
 const updatePost = async (req, res) => {
   const { id } = req.params;
   const { authorization } = req.headers;
@@ -43,6 +51,7 @@ module.exports = {
   getAllBlogPost,
   getBlogPostById,
   searchPost,
+  createPost,
   deletePost,
   updatePost,
 };

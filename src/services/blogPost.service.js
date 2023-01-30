@@ -1,6 +1,11 @@
+const Sequelize = require('sequelize');
 const { Op } = require('sequelize');
-const { BlogPost, User, Category } = require('../models');
+const { BlogPost, Category, PostCategory, User } = require('../models');
 const authenticateToken = require('../utils/authenticateToken');
+const config = require('../config/config');
+
+const env = process.env.NODE_ENV || 'development';
+const sequelize = new Sequelize(config[env]);
 
 const getAllBlogPost = async () => {
   const blogPosts = await BlogPost.findAll({
@@ -47,6 +52,27 @@ const searchPost = async (searchTerm) => {
   return { type: null, message: postList };
 };
 
+const createPost = async ({ title, content, categoryIds }, loggedUser) => {
+  const { email } = await authenticateToken(loggedUser);
+  const { id } = await User.findOne({ where: { email } });
+  
+  try {
+    const result = await sequelize.transaction(async (t) => {
+      const blogPost = await BlogPost.create({
+        title, content, userId: id,
+      }, { transaction: t });
+      const postCategories = categoryIds.map((e) => ({ categoryId: e, postId: blogPost.id }));
+      await PostCategory.bulkCreate(postCategories, { transaction: t });
+      return blogPost;
+    });
+    return await getBlogPostById(result.id);
+  } catch (error) {
+    const fail = new Error('one or more "categoryIds" not found');
+    fail.type = 'INVALID_FIELDS';
+    throw fail;
+  }
+};
+
 const updatePost = async (id, loggedUser, body) => {
   const { email } = await authenticateToken(loggedUser);
   const { message: { user } } = await getBlogPostById(id);
@@ -83,6 +109,7 @@ module.exports = {
   getAllBlogPost,
   getBlogPostById,
   searchPost,
+  createPost,
   deletePost,
   updatePost,
 };
