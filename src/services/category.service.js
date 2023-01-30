@@ -10,7 +10,6 @@ const createCategory = async (name) => {
   }
   
   const { dataValues } = await Category.create(name);
-  console.log(dataValues);
 
   return { type: null, message: dataValues };
 };
