@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { BlogPost, User, Category } = require('../models');
+const authenticateToken = require('../utils/authenticateToken');
 
 const getAllBlogPost = async () => {
   const blogPosts = await BlogPost.findAll({
@@ -46,8 +47,40 @@ const searchPost = async (searchTerm) => {
   return { type: null, message: postList };
 };
 
+const updatePost = async (id, loggedUser, body) => {
+  const { email } = await authenticateToken(loggedUser);
+  const { message: { user } } = await getBlogPostById(id);
+  
+  if (email !== user.email) {
+    const error = new Error('Unauthorized user');
+    error.type = 'INVALID_TOKEN';
+    throw error;
+  }
+
+  const postUpdated = await BlogPost.update({ ...body }, { where: { id } });
+  
+  return { type: null, message: postUpdated };
+};
+
+const deletePost = async (id, loggedUser) => {
+  const { email } = await authenticateToken(loggedUser);
+  const { message: { user } } = await getBlogPostById(id);
+  
+  if (email !== user.email) {
+    const error = new Error('Unauthorized user');
+    error.type = 'INVALID_TOKEN';
+    throw error;
+  }
+
+  await BlogPost.destroy({ where: { id } });
+  
+  return { type: null, message: 'Deleted' };
+};
+
 module.exports = {
   getAllBlogPost,
   getBlogPostById,
   searchPost,
+  deletePost,
+  updatePost,
 };

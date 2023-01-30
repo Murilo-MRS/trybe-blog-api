@@ -21,8 +21,28 @@ const searchPost = async (req, res) => {
   res.status(200).json(message);
 };
 
+const updatePost = async (req, res) => {
+  const { id } = req.params;
+  const { authorization } = req.headers;
+
+  const { message } = await blogPostService.updatePost(id, authorization, req.body);
+
+  res.status(200).json(message);
+};
+
+const deletePost = async (req, res) => {
+  const { id } = req.params;
+  const { authorization } = req.headers;
+
+  await blogPostService.deletePost(id, authorization);
+
+  res.status(204).end();
+};
+
 module.exports = {
   getAllBlogPost,
   getBlogPostById,
   searchPost,
+  deletePost,
+  updatePost,
 };

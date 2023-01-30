@@ -45,7 +45,7 @@ const getAllUserById = async (id) => {
 
 const deleteUser = async (user) => {
   const { email } = await authenticateToken(user);
-  console.log(email);
+  
   const deleted = await User.destroy({
     where: { email },
   });
