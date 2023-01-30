@@ -16,10 +16,8 @@ const createCategory = async (name) => {
 };
 
 const getAllCategories = async () => {
-  const users = await Category.findAll({
-    attributes: { exclude: ['password'] },
-  });
-  return { type: null, message: users };
+  const categories = await Category.findAll();
+  return { type: null, message: categories };
 };
 
 module.exports = {
