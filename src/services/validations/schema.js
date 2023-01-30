@@ -9,6 +9,11 @@ const userBodySchema = Joi.object({
   image: Joi.string(),
 });
 
+const categoryBodySchema = Joi.object({
+  name: Joi.string().required(),
+});
+
 module.exports = {
   userBodySchema,
+  categoryBodySchema,
 };
